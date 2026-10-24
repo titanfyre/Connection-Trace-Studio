@@ -1,0 +1,18 @@
+Titan Connection Trace Sensor - evaluation binary terms
+Copyright (c) 2026 Titanfyre. All rights reserved.
+
+The proprietary driver binary and catalog are separate from the MIT-licensed
+public application, SDK and installer source. Permission is granted to use the
+driver solely for lawful internal evaluation and integration testing on
+machines you own or administer with authorization. No production deployment,
+resale, sublicensing or redistribution is granted by these evaluation terms.
+Contact titancsa on Discord for an OEM or production agreement.
+
+This evaluation build has no technical trial timer or commercial activation
+system. Evaluation status must not be represented as a secure usage limit.
+
+Provided AS IS, without warranties of fitness, availability, compatibility,
+security or uninterrupted operation. To the extent permitted by applicable law,
+the author is not liable for damage arising from its use. You are responsible
+for lawful and authorized use, including handling potentially sensitive local
+application and network metadata. Mandatory statutory rights remain unaffected.
