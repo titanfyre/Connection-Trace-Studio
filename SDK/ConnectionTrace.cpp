@@ -53,6 +53,13 @@ bool Validate(const CT_BATCH& b,std::size_t bytes) noexcept{
  CT_U64 previous=0;
  for(CT_U32 i=0;i<b.Count;++i){const auto& e=b.Events[i];if(!e.Sequence||e.Sequence<=previous||!e.TimestampQpc||e.Family!=4&&e.Family!=6||e.Stage<1||e.Stage>3||e.Reserved||e.Reserved2||e.Flags&~CT_FLAGS_ALL||e.PathLength>=CT_PATH_CAPACITY)return false;
   if(!(e.Flags&CT_FLAG_PATH)&&e.PathLength)return false;
+  if((e.Flags&CT_FLAG_PATH_TRUNCATED)&&!(e.Flags&CT_FLAG_PATH))return false;
+  if((e.Flags&CT_FLAG_REAUTHORIZE)&&e.Stage!=CT_STAGE_AUTHORIZE)return false;
+  if((e.Flags&CT_FLAG_PORTS)&&(!(e.Flags&CT_FLAG_PROTOCOL)||(e.Protocol!=6&&e.Protocol!=17)))return false;
+  if(!(e.Flags&CT_FLAG_PORTS)&&(e.LocalPort||e.RemotePort))return false;
+  if(!(e.Flags&CT_FLAG_PROTOCOL)&&e.Protocol)return false;
+  if(!(e.Flags&CT_FLAG_PID)&&e.ProcessId)return false;
+  if(!(e.Flags&CT_FLAG_ENDPOINT)&&e.EndpointId)return false;
   if(e.Application[e.PathLength]!=0)return false;
   if(e.Family==4)for(unsigned n=4;n<16;++n)if(e.LocalAddress[n]||e.RemoteAddress[n])return false;
   previous=e.Sequence;
@@ -70,24 +77,40 @@ std::wstring Address(const CT_EVENT& e,bool remote){
  return result;
 }
 const Lifetime* Correlator::Observe(const CT_EVENT& e){
+ if(!e.Sequence)return nullptr;
+ bool gap=last_sequence_?e.Sequence>last_sequence_+1:e.Sequence>1;
+ if(last_sequence_&&e.Sequence<=last_sequence_){evicted_+=entries_.size();entries_.clear();gap=e.Sequence!=1;}
+ last_sequence_=e.Sequence;
+ if(gap)for(auto& entry:entries_)entry.incomplete=true;
  if(!(e.Flags&CT_FLAG_ENDPOINT)||!e.EndpointId)return nullptr;
  auto it=std::find_if(entries_.begin(),entries_.end(),[&](const Lifetime& l){return l.endpoint==e.EndpointId;});
  const bool pidKnown=bool(e.Flags&CT_FLAG_PID);
  const bool fresh=e.Stage==CT_STAGE_AUTHORIZE&&!(e.Flags&CT_FLAG_REAUTHORIZE);
- bool incomplete=false;
- if(it!=entries_.end()&&((fresh&&it->authorize)||(it->pid_known&&pidKnown&&it->pid!=e.ProcessId))){
-  incomplete=!it->closed;entries_.erase(it);it=entries_.end();
+ bool incomplete=gap;
+ if(it!=entries_.end()&&(fresh||(it->pid_known&&pidKnown&&it->pid!=e.ProcessId))){
+  incomplete=incomplete||!it->closed;entries_.erase(it);it=entries_.end();
  }
  if(it==entries_.end()){
   if(entries_.size()==2048){entries_.erase(entries_.begin());++evicted_;}
   entries_.push_back({e.EndpointId,e.ProcessId,0,0,0,!fresh,pidKnown,incomplete});it=entries_.end()-1;
  }
+ if(pidKnown&&!it->pid_known){it->pid=e.ProcessId;it->pid_known=true;}
  if(e.Stage==CT_STAGE_AUTHORIZE&&!(e.Flags&CT_FLAG_REAUTHORIZE)&&!it->authorize)it->authorize=e.TimestampQpc;
  if(e.Stage==CT_STAGE_ESTABLISHED&&!it->established)it->established=e.TimestampQpc;
  if(e.Stage==CT_STAGE_CLOSED)it->closed=e.TimestampQpc;
+ if((it->authorize&&it->established&&it->established<it->authorize)||(it->established&&it->closed&&it->closed<it->established)||(it->authorize&&it->closed&&it->closed<it->authorize))it->incomplete=true;
  return &*it;
 }
-struct Session::State{HANDLE device=INVALID_HANDLE_VALUE,engine=nullptr;bool active=false;};
+struct Session::State{
+ HANDLE device=INVALID_HANDLE_VALUE,engine=nullptr;bool active=false;ULONGLONG nextProbe=0;
+ void Probe(){
+  if(!active||GetTickCount64()<nextProbe)return;
+  FWPM_PROVIDER0* provider=nullptr;DWORD result=FwpmProviderGetByKey0(engine,&Provider,&provider);
+  if(provider)FwpmFreeMemory0(reinterpret_cast<void**>(&provider));
+  Check(result,"Capture WFP session was lost; stop and start capture again");
+  nextProbe=GetTickCount64()+1000;
+ }
+};
 Session::Session():state_(std::make_unique<State>()){}
 Session::~Session(){Stop();}
 void Session::Start(bool includePaths){
@@ -111,7 +134,7 @@ void Session::Start(bool includePaths){
    Check(FwpmFilterAdd0(state_->engine,&filter,nullptr,nullptr),"Add dynamic inspection filter");
   }
   Check(FwpmTransactionCommit0(state_->engine),"Commit WFP transaction");
-  state_->active=true;const auto status=Status();if(!status.Active)throw std::runtime_error("Driver did not enable capture.");
+  state_->active=true;state_->nextProbe=0;const auto status=Status();if(!status.Active)throw std::runtime_error("Driver did not enable capture.");
  }catch(...){Stop();throw;}
 }
 void Session::Stop() noexcept{
@@ -121,10 +144,12 @@ void Session::Stop() noexcept{
 }
 CT_STATUS Session::Status() const{
  if(state_->device==INVALID_HANDLE_VALUE)throw std::runtime_error("Capture has not been started.");
+ state_->Probe();
  CT_STATUS result{};Control(state_->device,CT_IOCTL_STATUS,&result,sizeof(result));if(!Validate(result))Fail(ERROR_INVALID_DATA,"Validate driver status");return result;
 }
 std::vector<CT_EVENT> Session::Read(){
  if(!state_->active)throw std::runtime_error("Capture is inactive.");
+ state_->Probe();
  CT_BATCH batch{};Control(state_->device,CT_IOCTL_READ,&batch,sizeof(batch));if(!Validate(batch,sizeof(batch)))Fail(ERROR_INVALID_DATA,"Validate event batch");return {batch.Events,batch.Events+batch.Count};
 }
 std::string Session::Error(unsigned long code){

@@ -8,10 +8,12 @@ integration example for desktop diagnostics, OEM software and support tooling.
 
 ![Offline preview with synthetic data; no live capture](docs/app.png)
 
-**Engineering preview:** the new sensor requires Microsoft signing and coordinated
-runtime validation. The source builds and offline tests do not establish that a
-signed driver has been tested on a real network. No WHQL, Windows Server or
-Windows certification claim is made. Targets Windows 10 2004+ / Windows 11 x64.
+**Engineering preview:** a test-signed Windows 10 x64 VM passed TCP/UDP loopback
+checks on IPv4/IPv6, Start/Stop options, client-crash cleanup and driver removal,
+both normally and with targeted Driver Verifier enabled.
+Microsoft signing, Windows 11, HVCI and network coexistence
+validation remain pending. This is not a Microsoft-signed production release,
+WHQL certification or a Windows Server claim. Targets Windows 10 2004+ / Windows 11 x64.
 
 ## Install and use
 
@@ -47,8 +49,9 @@ edit or build the open-source application.
 
 `--capture-json 30 C:\Reports\new.json` explicitly creates a structured report
 and a `.ready` marker after capture starts. Existing files are never overwritten.
-It records numeric stage/endpoint/port/PID metadata and path lengths, rather
-than exporting application paths. `--session-self-test C:\Reports\new.json`
+It records stage/port/PID metadata, opaque endpoint identifiers and path lengths, rather
+than exporting application paths. Opaque endpoint IDs are hexadecimal JSON strings
+so JavaScript preserves all 64 bits. `--session-self-test C:\Reports\new.json`
 checks a real installed sensor's Start/Stop cycles with paths off/on/off; it is
 separate from the offline build tests.
 
@@ -67,6 +70,9 @@ flag. Endpoint identifiers are pseudonymized separately for each capture; they
 are temporary correlation identifiers, not pointers or permanent
 machine or process identities. PID reuse, UDP multiple peers, missing events and
 reauthorization mean a row is not automatically a distinct successful TCP connection.
+Real port values are exported only for TCP/UDP. ALE's ICMP type/code aliases are
+not misrepresented as transport ports. The correlator marks sequence gaps and
+ambiguous lifecycle reuse as incomplete; it does not infer missing events.
 
 Timestamps use the kernel performance counter. Intervals between observed stages
 are WFP stage intervals, **not end-to-end latency**, packet RTT, DNS timing or a
@@ -80,6 +86,8 @@ The driver never waits for a user-mode decision, reads packet contents, decrypts
 TLS, modifies traffic or grants caller-supplied code access to the kernel. It
 does not replace Windows Firewall. A 20 ms user-mode polling interval controls
 display/consumer updates; it does not delay or pend a connection.
+The SDK checks that its dynamic WFP provider still exists at most once per second;
+if BFE loses the session, capture reports an error instead of silently staying active.
 
 ## Minimal C++ integration
 

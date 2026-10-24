@@ -77,7 +77,7 @@ struct Lifetime {
 /* Bounded, best-effort correlation. Dropped events make completeness unknown. */
 class Correlator {
     std::vector<Lifetime> entries_;
-    CT_U64 evicted_=0;
+    CT_U64 evicted_=0,last_sequence_=0;
 public:
     const Lifetime* Observe(const CT_EVENT&);
     const std::vector<Lifetime>& Entries() const noexcept{return entries_;}

@@ -1,8 +1,46 @@
 # Validation status
 
-This is a new engineering preview. No host or guest driver installation, live WFP
-capture, Microsoft signing, HVCI runtime test, load/unload stress or Windows network
-coexistence validation has been performed for this package yet.
+This is a new engineering preview. The final sensor passed one isolated,
+test-signed Windows 10 x64 VM runtime campaign on 2026-10-24, then repeated it
+with targeted Driver Verifier enabled (flags 0x001209BB). It is not yet a
+Microsoft-signed production package. No driver was installed or activated on the
+host. Test signing was limited to the disposable guest and its baseline restored.
+
+## Windows 10 runtime results
+
+Guest Windows version: 10.0.19045.0. Each loopback fixture was matched to its real
+generator PID, protocol, address family and ephemeral destination port:
+
+| Fixture | Authorize | Established / authorized | Endpoint closed |
+|---|---:|---:|---:|
+| TCP IPv4 | 1 | 1 | 1 |
+| TCP IPv6 | 1 | 1 | 1 |
+| UDP IPv4 | 1 | 1 | 1 |
+| UDP IPv6 | 1 | 1 | 1 |
+
+The same SDK session passed Start/Stop with path Options **0 -> 1 -> 0**.
+The default capture had no application-path metadata, no dropped events and no
+report truncation. Abrupt termination of the owned CLI client released capture
+and dynamic WFP objects: the first new-owner probe succeeded. The exact tested
+driver was removed and unloaded. The VM returned to its original Off baseline
+with all nine historical checkpoints preserved; host security was unchanged.
+The four fixture results, options, crash cleanup and unload also passed with
+Verifier enabled for the sensor. This is not an exhaustive stress or fuzz campaign.
+
+The unsigned submission input and the guest test-signed installed file have
+different whole-file SHA-256 values because test signing changes the file. The
+preserved Verifier guest image and unsigned submission have matching SHA-256
+Authenticode-protected PE content. The private evidence records those digests and
+the manifest-to-install pipeline; this does not make the test certificate a
+Microsoft signature.
+
+The VM campaigns used the archived CLI build before its final pure JSON-format
+change: endpoint identifiers are now exact hexadecimal strings instead of JSON
+numbers. That final CLI binary was not replayed in the VM. The kernel and core SDK
+are unchanged; the formatter was checked offline in Release and ASAN with 0,
+2^53+1 and UINT64_MAX, including exact `ConvertFrom-Json` string round trips.
+
+## Offline checks
 
 Offline validation covers the public protocol decoder, bounded event correlation,
 partial lifecycle data, invalid lengths/reserved fields, randomized records,
@@ -18,15 +56,17 @@ remains private. The installer verifies Microsoft catalog trust, exact package
 identity and INF/SYS catalog membership. Installation remains unavailable until
 the signed package is returned.
 
-Required next validation: signed Win10/11 x64 VM install/uninstall, one-owner
-exclusion, Start/Stop/crash cleanup, parallel IPv4/IPv6 TCP and UDP generation,
-ring overload with visible drops, suspend/restart, verifier and memory integrity,
-BFE restart and coexistence with Windows Firewall/VPN/endpoint protection.
+Required next validation: the returned Microsoft-signed package on Win10/11 x64,
+extended one-owner/Start/Stop/crash stress, ring overload with visible drops,
+suspend/restart, longer Verifier stress and memory integrity, BFE restart and
+coexistence with Windows Firewall/VPN/endpoint protection.
 
 The private guest campaign uses the pinned CLI SHA-256, a readiness handshake,
 own-process loopback TCP/UDP on IPv4/IPv6, actual event field assertions,
 off/on/off path options and termination of its own child to test cleanup.
-Preparing and parsing this campaign is not a runtime pass.
+Those cases were executed in the test-signed Windows 10 guest described above.
+They are functional smoke checks, not extended stress or proof of compatibility
+with every network stack, firewall or Windows installation.
 
 On an unexpected persistent WFP unregistration failure, device removal retains
 the device and retries at PASSIVE_LEVEL rather than releasing still-registered
