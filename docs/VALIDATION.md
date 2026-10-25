@@ -1,5 +1,19 @@
 # Validation status
 
+## Returned Microsoft package (2026-10-25)
+
+The Microsoft Hardware Compatibility Publisher catalog, SYS/INF membership and
+preserved submitted executable content were checked. The self-contained console
+installer then installed the exact returned package on Windows 10 build 19045
+x64; existing real-driver functional tests passed, and the owned node was removed
+and the driver unloaded. The VM's original baseline and nine historical snapshots
+were preserved. This campaign used the Microsoft-signed SYS/CAT without adding a
+guest test signature. The guest was in test mode for a separate unsigned network
+project, so Secure Boot/HVCI compatibility is not established by this result.
+The returned package also passed the repeated real-driver campaign with targeted
+standard Driver Verifier enabled. The UI install/uninstall/recovery paths and
+Windows 11 still need broader testing.
+
 This is a new engineering preview. The final sensor passed one isolated,
 test-signed Windows 10 x64 VM runtime campaign on 2026-10-24, then repeated it
 with targeted Driver Verifier enabled (flags 0x001209BB). It is not yet a
@@ -36,7 +50,7 @@ Microsoft signature.
 
 The VM campaigns used the archived CLI build before its final pure JSON-format
 change: endpoint identifiers are now exact hexadecimal strings instead of JSON
-numbers. That final CLI binary was not replayed in the VM. The kernel and core SDK
+numbers. The final CLI binary has since passed the returned-package campaign below. The kernel and core SDK
 are unchanged; the formatter was checked offline in Release and ASAN with 0,
 2^53+1 and UINT64_MAX, including exact `ConvertFrom-Json` string round trips.
 
@@ -53,10 +67,9 @@ a sensor or WFP session and cannot prove kernel runtime stability.
 Private build validation uses WDK 26100, W4/WX, PREfast, CFG, InfVerif /w and /u,
 Inf2Cat, and SHA-256 verification of expanded submission payloads. Driver source
 remains private. The installer verifies Microsoft catalog trust, exact package
-identity and INF/SYS catalog membership. Installation remains unavailable until
-the signed package is returned.
+identity and INF/SYS catalog membership. The signed evaluation package is now included in the release installers.
 
-Required next validation: the returned Microsoft-signed package on Win10/11 x64,
+Required next validation: the signed package on Windows 11 x64,
 extended one-owner/Start/Stop/crash stress, ring overload with visible drops,
 suspend/restart, longer Verifier stress and memory integrity, BFE restart and
 coexistence with Windows Firewall/VPN/endpoint protection.

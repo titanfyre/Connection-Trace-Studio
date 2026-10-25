@@ -8,16 +8,17 @@ integration example for desktop diagnostics, OEM software and support tooling.
 
 ![Offline preview with synthetic data; no live capture](docs/app.png)
 
-**Engineering preview:** a test-signed Windows 10 x64 VM passed TCP/UDP loopback
-checks on IPv4/IPv6, Start/Stop options, client-crash cleanup and driver removal,
-both normally and with targeted Driver Verifier enabled.
-Microsoft signing, Windows 11, HVCI and network coexistence
-validation remain pending. This is not a Microsoft-signed production release,
-WHQL certification or a Windows Server claim. Targets Windows 10 2004+ / Windows 11 x64.
+**Microsoft-signed evaluation package:** the driver is signed by Microsoft Windows
+Hardware Compatibility Publisher. The returned package and self-contained console
+installer passed installation and functional checks in a Windows 10 build 19045
+x64 VM. Earlier normal and targeted Driver Verifier campaigns covered the same
+submitted executable. Windows 11, HVCI and extended coexistence qualification remain
+pending. Microsoft signing is not WHQL certification or a production guarantee.
+Targets Windows 10 2004+ / Windows 11 x64.
 
 ## Install and use
 
-1. Download the complete release archive when a signed package is available.
+1. Download the complete release archive from Releases.
 2. Run `ConnectionTraceSetup.exe` and choose **Install / reinstall**, or run
    `ConnectionTraceSetupConsole.exe /install` from an administrator console.
    The installers refuse an unsigned or untrusted driver catalog. Restart only
