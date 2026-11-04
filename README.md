@@ -126,6 +126,12 @@ eviction information; it must not be treated as a lossless activity log.
 
 ## Build and validation
 
+Demo/evaluation driver source is available; see [driver/README.md](driver/README.md) for
+build instructions and separate evaluation-source terms. Those terms apply to
+Titan-authored driver code. Third-party source licenses and existing application/SDK
+licenses remain applicable. Full/commercial implementation and private signing or
+activation material are excluded.
+
 Visual Studio 2022 Desktop C++ tools, CMake 3.20+, Windows SDK, x64:
 
 ```powershell
@@ -138,7 +144,7 @@ Visual Studio 2022 Desktop C++ tools, CMake 3.20+, Windows SDK, x64:
 Outputs: `obj/Build/Release`. Tests validate malformed protocol data, bounded
 correlation under stress and package trust rejection without installing a driver,
 creating WFP filters or capturing live traffic. See [validation status](docs/VALIDATION.md).
-Kernel implementation and submission assets are private and are not in this repo.
+Evaluation driver source is documented in [driver/README.md](driver/README.md). Full/commercial implementation and signing/submission assets are excluded.
 
 ## Licensing and integration
 
