@@ -1,0 +1,3 @@
+Gem::Specification.new do |s|
+ s.name='connection-trace-studio';s.version='1.0.0';s.summary='Windows x64 Connection-Trace-Studio direct SDK';s.description='Product native SDK operations through a UTF-8 JSON C ABI; driver installed separately.';s.authors=['TitanCSA'];s.license='MIT';s.homepage='https://github.com/titanfyre/Connection-Trace-Studio';s.required_ruby_version='>=3.1';s.files=Dir['lib/**/*','native/*','docs/*','README.md','LICENSE'];s.require_paths=['lib'];s.add_runtime_dependency 'fiddle','>=1.1','<2';s.metadata={'source_code_uri'=>s.homepage,'documentation_uri'=>s.homepage+'/tree/main/Connection-Trace-Studio-Ruby-rubygems/docs','allowed_push_host'=>'https://rubygems.org'}
+end

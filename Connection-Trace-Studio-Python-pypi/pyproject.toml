@@ -1,0 +1,18 @@
+[build-system]
+requires=["setuptools>=77","wheel>=0.43"]
+build-backend="setuptools.build_meta"
+[project]
+name="connection-trace-studio"
+version="1.0.0"
+description="Windows x64 Connection-Trace-Studio direct SDK"
+requires-python=">=3.10"
+license="MIT"
+readme="README.md"
+[project.urls]
+Repository="https://github.com/titanfyre/Connection-Trace-Studio"
+[tool.setuptools]
+packages=["connection_trace_studio"]
+[tool.setuptools.package-data]
+connection_trace_studio=["*.dll"]
+[tool.setuptools.data-files]
+"share/connection-trace-studio/docs"=["docs/*","LICENSE"]
