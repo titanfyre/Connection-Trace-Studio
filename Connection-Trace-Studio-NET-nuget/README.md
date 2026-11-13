@@ -1,8 +1,6 @@
 # Connection-Trace-Studio .NET8 SDK
 
-Package ID `ConnectionTraceStudio.SDK`. NuGet upload remains on hold at owner request.
-
-```csharp
+Package ID `ConnectionTraceStudio.SDK`. ```csharp
 using var client=new TitanCSA.Products.ConnectionTraceStudio.Client();
 string statusJson=client.Call("status", "{}");
 ```
