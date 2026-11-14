@@ -239,13 +239,13 @@
       "api_prefix": "connection_trace_studio_json_"
     },
     "Dart/pub-dev": {
-      "status": "built_fixture_and_production_verified",
+      "status": "registry_rate_limited_retry_later",
       "name": "connection_trace_studio",
       "version": "1.0.0",
       "directory": "Connection-Trace-Studio-Dart-pub-dev",
       "registry_published": false,
       "documentation_bundled": true,
-      "url": null,
+      "url": "https://pub.dev/packages/connection_trace_studio",
       "public_consumer_verified": false,
       "module": "connection_trace_studio",
       "dll_name": "ConnectionTraceStudioJsonSDK.dll",
