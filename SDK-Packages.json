@@ -239,7 +239,7 @@
       "api_prefix": "connection_trace_studio_json_"
     },
     "Dart/pub-dev": {
-      "status": "registry_rate_limited_retry_later",
+      "status": "submitted_requires_public_verification",
       "name": "connection_trace_studio",
       "version": "1.0.0",
       "directory": "Connection-Trace-Studio-Dart-pub-dev",
