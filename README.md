@@ -164,18 +164,18 @@ Les sources, licences, guides API et exemples sont regroupes dans [le depot SDK 
 | Conan | `connection-trace-studio` | `conan install --requires=connection-trace-studio/0.1.0 -r titancsa --build=missing -s compiler.cppstd=17` |
 | NuGet | `Connection-Trace-Studio.Native` | `Install-Package Connection-Trace-Studio.Native -Version 0.1.0` |
 | NuGet | `ConnectionTraceStudio.SDK` | `dotnet add package ConnectionTraceStudio.SDK --version 1.0.0` |
-| PyPI | `connection_trace_studio` | Commande prevue apres publication : `python -m pip install connection-trace-studio==1.0.0` |
+| PyPI | `connection-trace-studio` | Commande prevue apres publication : `python -m pip install connection-trace-studio==1.0.0` |
 | Conda | `connection-trace-studio` | `conda install --override-channels -c https://raw.githubusercontent.com/TitanCSA/sdk-packages/089bc73095aa8eda89bacbe10d0b9e58394b0207/conda-channel -c conda-forge connection-trace-studio` (canal TitanCSA) |
-| crates.io | `connection_trace_studio` | `cargo add connection-trace-studio@1.0.0` |
-| npm | `connection_trace_studio` | Commande prevue apres publication : `npm install connection-trace-studio@1.0.0` |
+| crates.io | `connection-trace-studio` | `cargo add connection-trace-studio@1.0.0` |
+| npm | `connection-trace-studio` | Commande prevue apres publication : `npm install connection-trace-studio@1.0.0` |
 | Maven Central | `io.github.titancsa:connection-trace-studio` | `io.github.titancsa:connection-trace-studio:1.0.0 (pom.xml / Gradle)` |
 | JitPack | `com.github.titanfyre:Connection-Trace-Studio` | `com.github.titanfyre:Connection-Trace-Studio:java-sdk-v1.0.0 (avec le depot JitPack)` |
 | Go Modules | `github.com/titanfyre/Connection-Trace-Studio/Connection-Trace-Studio-Go-modules` | `go get github.com/titanfyre/Connection-Trace-Studio/Connection-Trace-Studio-Go-modules@v1.0.0` |
 | pkg.go.dev | `github.com/titanfyre/Connection-Trace-Studio/Connection-Trace-Studio-Go-modules` | `Documentation : https://pkg.go.dev/github.com/titanfyre/Connection-Trace-Studio/Connection-Trace-Studio-Go-modules@v1.0.0` |
-| PowerShell Gallery | `connection_trace_studio` | `Install-Module ConnectionTraceStudio -RequiredVersion 1.0.0 -Scope CurrentUser` |
+| PowerShell Gallery | `ConnectionTraceStudio` | `Install-Module ConnectionTraceStudio -RequiredVersion 1.0.0 -Scope CurrentUser` |
 | pub.dev | `connection_trace_studio` | Commande prevue apres publication : `dart pub add connection_trace_studio:1.0.0` |
-| RubyGems | `connection_trace_studio` | `gem install connection-trace-studio -v 1.0.0` |
-| Packagist | `connection_trace_studio` | Commande prevue apres publication : `composer require titancsa/connection-trace-studio:1.0.0` |
+| RubyGems | `connection-trace-studio` | `gem install connection-trace-studio -v 1.0.0` |
+| Packagist | `titancsa/connection-trace-studio` | Commande prevue apres publication : `composer require titancsa/connection-trace-studio:1.0.0` |
 
 Pour vcpkg et Conan, configure d abord le registre TitanCSA avec [le guide complet](https://github.com/TitanCSA/sdk-packages/tree/main/projects/Connection-Trace-Studio/README.md). Le guide explique aussi Maven/Gradle, les prerequis et le chargement des DLL. Les pilotes/applications du produit sont installes separement. Les commandes marquees prevues ne sont pas encore disponibles.
 
